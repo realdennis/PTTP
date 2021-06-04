@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Text } from "ink";
+import logger from "./utils/logger.js";
 
 const useIpfsPubSubMessage = (ipfsNode, topic) => {
   const [messages, setMessages] = useState([]);
@@ -10,15 +11,36 @@ const useIpfsPubSubMessage = (ipfsNode, topic) => {
     setMessages((messages) => [...messages, message]);
   };
 
+  const connectRequestCallback = (message) => {
+    const { data } = message;
+    const { nickname, text } = data;
+    if (text === "connect_request") {
+      // log('connect_request')
+    }
+  };
+
   useEffect(() => {
     ipfsNode.pubsub.subscribe(topic, callback);
     return () => ipfsNode.pubsub.unsubscribe(topic, callback);
+  }, []);
+
+  useEffect(() => {
+    ipfsNode.pubsub.subscribe(topic, connectRequestCallback);
+    return () => ipfsNode.pubsub.unsubscribe(topic, connectRequestCallback);
   }, []);
 
   return messages;
 };
 
 const App = ({ mode, nickname, ipfsNode, topicID }) => {
+  useEffect(() => {
+    if (mode === "join") {
+      ipfsNode.pubsub.publish(topicID, {
+        nickname,
+        text: "connect_request",
+      });
+    }
+  }, []);
   const messages = useIpfsPubSubMessage(ipfsNode, topicID);
   return (
     <>
@@ -27,7 +49,7 @@ const App = ({ mode, nickname, ipfsNode, topicID }) => {
       {mode === "join" ? (
         <Text>join {topicID} ...</Text>
       ) : (
-        <Text>$ ptp --join {topicID}</Text>
+        <Text>$ ptp join {topicID}</Text>
       )}
       {messages.map(({ data, key }) => (
         <Text key={key}>{data.toString("utf8")}</Text>

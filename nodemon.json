@@ -1,5 +1,5 @@
 {
   "watch": ["src", "config"],
   "ext": "js",
-  "exec": "yarn build && yarn start:dev"
+  "exec": "npm run build && npm run start:dev"
 }

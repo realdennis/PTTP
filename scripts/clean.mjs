@@ -1,2 +1,2 @@
-import config from '../config/index.js';
-$`rm -rf ${config.ipfs.repo}`
+import config from '../src/config/index.js';
+$`rm -rf ${config.repo.folder}`

@@ -9,8 +9,8 @@
   "bin": "dist/index.js",
     "scripts": {
     "build": "babel src/ -d dist/",
-    "start": "node ./dist",
-    "start:dev": "NODE_ENV=dev node ./dist",
+    "start": "node ./dist create",
+    "start:dev": "NODE_ENV=dev node ./dist create",
     "dev": "nodemon",
     "clean": "zx scripts/clean.mjs",
     "prepublishOnly": "npm run build",
