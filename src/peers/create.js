@@ -36,6 +36,7 @@ const create = async (node, topicID, nickname) => {
   spinner.start();
   await waitSignal(node, topicID, {
     type: ACTION.FINNAL_CONNECT,
+    from: otherPeerPayload.from,
   });
   spinner.stop();
   logger('[handler] [create] done');

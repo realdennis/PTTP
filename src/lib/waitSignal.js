@@ -1,7 +1,7 @@
 import logger from '../utils/logger.js';
-const waitSignal = (node, topic, payload, timeout) =>
+const waitSignal = (node, topic, conditionPayload, timeout) =>
   new Promise((resolve, reject) => {
-    logger(`[wait signal] wait for ${payload.type}`);
+    logger(`[wait signal] wait for ${conditionPayload.type}`);
     const callback = async (msg) => {
       const { id } = await node.id();
       const { from, data } = msg;
@@ -10,13 +10,16 @@ const waitSignal = (node, topic, payload, timeout) =>
       const dataString = decoder.decode(data);
       try {
         // since the data could be other people in the same topic(room)
-        const otherPeerPayload = JSON.parse(dataString);
+        const otherPeerPayload = { ...JSON.parse(dataString || ''), from };
+        const isFulfilledPayload = Object.keys(conditionPayload).every(
+          (key) => conditionPayload[key] === otherPeerPayload[key]
+        );
 
-        if (otherPeerPayload.type === payload.type && from !== id) {
+        if (isFulfilledPayload && from !== id) {
           logger('[wait signal] action type=', otherPeerPayload.type);
           // cleanup
           node.pubsub.unsubscribe(topic, callback);
-          resolve({ ...otherPeerPayload, from });
+          resolve(otherPeerPayload);
         }
       } catch (e) {
         logger('[wait signal]', e);
