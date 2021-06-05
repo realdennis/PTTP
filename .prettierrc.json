@@ -1,0 +1,5 @@
+{
+  "parser": "babel",
+  "tabWidth": 2,
+  "singleQuote": true
+}
