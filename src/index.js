@@ -22,33 +22,19 @@ const main = async () => {
     description: 'nickname, default is anomymous',
     default: 'anomymous',
   }).argv;
-  const createHandler = () => {
-    const topicID = isDev ? config.debug.topic : crypto.randomUUID();
-    render(
-      <App
-        mode={'create'}
-        nickname={nickname}
-        ipfsNode={node}
-        topicID={topicID}
-      />
-    );
+
+  const handler = ({ room }) => {
+    const topicID = isDev
+      ? config.debug.topic
+      : room
+      ? room
+      : crypto.randomUUID();
+    render(<App nickname={nickname} ipfsNode={node} topicID={topicID} />);
   };
 
-  const joinHandler = ({ room }) => {
-    const topicID = isDev ? config.debug.topic : room;
-    logger('join handler room=', topicID);
-    render(
-      <App
-        mode={'join'}
-        nickname={nickname}
-        ipfsNode={node}
-        topicID={topicID}
-      />
-    );
-  };
   yargs(hideBin(process.argv))
     .scriptName('ptp')
-    .command('create', 'create the unique room!', () => {}, createHandler)
+    .command('create', 'create the unique room!', () => {}, handler)
     .command(
       'join [room]',
       'join the unique room!',
@@ -59,7 +45,7 @@ const main = async () => {
           describe: 'join [uuid]',
         });
       },
-      joinHandler
+      handler
     )
     .demandCommand(1, 'You need at least one command.')
     .help().argv;
