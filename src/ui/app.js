@@ -1,10 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Text } from 'ink';
+import { Text, Box, useInput } from 'ink';
+import TextInput from 'ink-text-input';
 
-const useIpfsSubMessage = ({ node, topicID, authPeerID, sessionKey }) => {
+const useIpfsSubMessage = ({
+  node,
+  nickname,
+  topicID,
+  authPeerID,
+  sessionKey,
+}) => {
   const [messages, setMessages] = useState([]);
-  const callback = (payload) => {
-    const { cipherText, from, nickname } = payload;
+  const callback = (mes) => {
+    const { data: payload, from } = mes;
+    const { cipherText, nickname } = payload;
     if (from !== authPeerID) {
       return;
     }
@@ -13,7 +21,7 @@ const useIpfsSubMessage = ({ node, topicID, authPeerID, sessionKey }) => {
       {
         text: cipherText,
         nickname,
-        key: `${ciphertext}-${Date.now()}`,
+        key: cipherText + Date.now(),
       },
     ]);
   };
@@ -21,22 +29,30 @@ const useIpfsSubMessage = ({ node, topicID, authPeerID, sessionKey }) => {
     node.pubsub.subscribe(topicID, callback);
     return () => node.pubsub.unsubscribe(topicID, callback);
   }, []);
-  return messages;
+
+  const sendMessage = (text) =>
+    node.pubsub.publish(topicID, {
+      cipherText: text,
+      nickname,
+    });
+  return [messages, sendMessage];
 };
 
-const App = ({ nickname, node, sessionKey, authPeerID, topicID }) => {
-  const messages = useIpfsSubMessage({ node, topicID, authPeerID, sessionKey });
+const App = ({ nickname, node, sessionKey, authPeerID, ownID, topicID }) => {
+  const [messages, sendMessage] = useIpfsSubMessage({
+    node,
+    nickname,
+    topicID,
+    authPeerID,
+    sessionKey,
+  });
+
+  const [input, setInput] = useState('');
+
   return (
     <>
       <Text color="red">Nickname: {nickname}</Text>
       <Text color="red">Roomname: {topicID}</Text>
-      {messages.map((message) => (
-        <>
-          <Text key={message.key}>
-            {message.nickname}:{message.text}
-          </Text>
-        </>
-      ))}
     </>
   );
 };
