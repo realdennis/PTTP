@@ -9,17 +9,25 @@ import getNode from './lib/getNode.js';
 import peers from './peers/index.js';
 
 const handler = async ({ room, mode, nickname }) => {
+  const server = crypto.createDiffieHellman(64);
+  let primeHex = server.getPrime('hex');
+
+  if (mode === 'join' && !isDev) {
+    primeHex = room.split('-').pop();
+  }
+
   const node = await getNode();
   const topicID = isDev
     ? config.debug.topic
     : mode === 'create'
-    ? crypto.randomUUID()
-    : room || fallbackTopicID;
+    ? `${crypto.randomUUID()}-${primeHex}`
+    : room;
 
   const { sessionKey, authPeerID } = await peers[mode]({
     node,
     topicID,
     nickname,
+    primeHex,
   });
   const { id: ownID } = await node.id();
 

@@ -14,8 +14,8 @@ const pollingSendSignal = (node, topic, payload) => {
   return cleanup;
 };
 
-const join = async ({ node, topicID, nickname }) => {
-  const alice = getDeffienHellmanAlice(topicID);
+const join = async ({ node, topicID, nickname, primeHex }) => {
+  const alice = getDeffienHellmanAlice(primeHex);
   const alicePub = alice.getPublicKey();
 
   const spinner = ora('Request to join the room...');

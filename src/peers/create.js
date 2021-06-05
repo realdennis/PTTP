@@ -8,8 +8,8 @@ import ACTION from '../constants/action.js';
 
 import logger from '../utils/logger.js';
 
-const create = async ({node, topicID, nickname}) => {
-  const alice = getDeffienHellmanAlice(topicID);
+const create = async ({node, topicID, nickname,primeHex}) => {
+  const alice = getDeffienHellmanAlice(primeHex);
   const alicePub = alice.getPublicKey();
 
   console.log(`Run the above command in other machine:
