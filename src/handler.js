@@ -4,7 +4,6 @@
 
 import crypto from 'crypto';
 import inquire from 'inquirer';
-import dotenv from 'dotenv';
 import ora from 'ora';
 import config from './config/index.js';
 import isDev from './utils/isDev.js';
@@ -69,10 +68,11 @@ const handler = async ({ room, mode, nickname }) => {
     const answer = await inquire.prompt({
       name: ACTION.APPROVE_CONNECT,
       type: 'confirm',
-      message: `Do you want to connect with ${otherPeerPayload.nickname} ?`,
+      message: `Do you want to connect with ${otherPeerPayload.nickname}?`,
     });
     if (!answer[ACTION.APPROVE_CONNECT]) {
       console.log('You choose no, code exit');
+      node.repo.gc();
       process.exit();
     }
     sendSignal(node, topicID, {
@@ -101,10 +101,11 @@ const handler = async ({ room, mode, nickname }) => {
     const answer = await inquire.prompt({
       name: ACTION.APPROVE_CONNECT,
       type: 'confirm',
-      message: `Do you want to connect with ${otherPeerPayload.nickname} ?`,
+      message: `Do you want to connect with ${otherPeerPayload.nickname}?`,
     });
     if (!answer[ACTION.APPROVE_CONNECT]) {
       console.log('You choose no, code exit');
+      node.repo.gc();
       process.exit();
     }
     sendSignal(node, topicID, {
