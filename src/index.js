@@ -11,7 +11,6 @@ import crypto from 'crypto';
 
 import config from './config/index.js';
 
-import logger from './utils/logger.js';
 import isDev from './utils/isDev.js';
 
 const main = async () => {
@@ -23,18 +22,29 @@ const main = async () => {
     default: 'anomymous',
   }).argv;
 
-  const handler = ({ room }) => {
-    const topicID = isDev
-      ? config.debug.topic
-      : room
-      ? room
-      : crypto.randomUUID();
+  const handler = ({ room, mode }) => {
+    let topicID;
+    if (mode === 'create') {
+      topicID = crypto.randomUUID();
+    }
+    if (mode === 'join') {
+      topicID = room;
+    }
+    if (isDev) {
+      // override if dev mode
+      topicID = config.debug.topic;
+    }
     render(<App nickname={nickname} ipfsNode={node} topicID={topicID} />);
   };
 
   yargs(hideBin(process.argv))
     .scriptName('ptp')
-    .command('create', 'create the unique room!', () => {}, handler)
+    .command(
+      'create',
+      'create the unique room!',
+      () => {},
+      () => handler({ mode: 'create' })
+    )
     .command(
       'join [room]',
       'join the unique room!',
@@ -45,7 +55,7 @@ const main = async () => {
           describe: 'join [uuid]',
         });
       },
-      handler
+      ({ room }) => handler({ room, mode: 'join' })
     )
     .demandCommand(1, 'You need at least one command.')
     .help().argv;
