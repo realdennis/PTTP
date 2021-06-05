@@ -1,4 +1,5 @@
 import inquire from 'inquirer';
+import ora from 'ora';
 import waitSignal from '../lib/waitSignal.js';
 import sendSignal from '../lib/sendSignal.js';
 
@@ -11,7 +12,11 @@ const pollingSendSignal = (node, topic, payload) => {
   const cleanup = () => clearInterval(timer);
   return cleanup;
 };
+
 const join = async (node, topicID, nickname) => {
+  const spinner = ora('Request to join the room...');
+  spinner.color = 'green';
+  spinner.start();
   const cleanup = pollingSendSignal(node, topicID, {
     type: ACTION.REQUEST_CONNECT,
     nickname,
@@ -22,6 +27,7 @@ const join = async (node, topicID, nickname) => {
     type: ACTION.APPROVE_CONNECT,
   });
   cleanup && cleanup();
+  spinner.stop();
   const answer = await inquire.prompt({
     name: ACTION.APPROVE_CONNECT,
     type: 'confirm',
