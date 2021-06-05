@@ -2,6 +2,7 @@ import inquire from 'inquirer';
 import ora from 'ora';
 import waitSignal from '../lib/waitSignal.js';
 import sendSignal from '../lib/sendSignal.js';
+import getDeffienHellmanAlice from '../lib/getDeffienHellmanAlice.js';
 
 import ACTION from '../constants/action.js';
 
@@ -13,14 +14,17 @@ const pollingSendSignal = (node, topic, payload) => {
   return cleanup;
 };
 
-const join = async (node, topicID, nickname) => {
+const join = async ({ node, topicID, nickname }) => {
+  const alice = getDeffienHellmanAlice(topicID);
+  const alicePub = alice.getPublicKey();
+
   const spinner = ora('Request to join the room...');
   spinner.color = 'green';
   spinner.start();
   const cleanup = pollingSendSignal(node, topicID, {
     type: ACTION.REQUEST_CONNECT,
     nickname,
-    key: '<THIS IS SUPPOSED TO BE KEY FOR EXCHANGE>',
+    key: alicePub,
   });
 
   const otherPeerPayload = await waitSignal(node, topicID, {
@@ -28,6 +32,9 @@ const join = async (node, topicID, nickname) => {
   });
   cleanup && cleanup();
   spinner.stop();
+  const bobPub = otherPeerPayload.key;
+  const aliceBobSecret = alice.computeSecret(bobPub);
+
   const answer = await inquire.prompt({
     name: ACTION.APPROVE_CONNECT,
     type: 'confirm',
@@ -40,10 +47,13 @@ const join = async (node, topicID, nickname) => {
   }
   sendSignal(node, topicID, {
     nickname,
-    key: '<KEY_FOR_EXCHANGE>', // send the exchange key back
     type: ACTION.FINNAL_CONNECT,
   });
   logger('[handler] [join] done');
+  return {
+    sessionKey: aliceBobSecret,
+    authPeerID: otherPeerPayload.from,
+  };
 };
 
 export default join;

@@ -16,10 +16,15 @@ const waitSignal = (node, topic, conditionPayload, timeout) =>
         );
 
         if (isFulfilledPayload && from !== id) {
-          logger('[wait signal] action type=', otherPeerPayload.type);
+          const { key } = otherPeerPayload;
+          const _key = (key && key.data && Buffer.from(key.data)) || undefined;
           // cleanup
           node.pubsub.unsubscribe(topic, callback);
-          resolve(otherPeerPayload);
+          resolve(
+            Object.assign({}, otherPeerPayload, {
+              key: _key,
+            })
+          );
         }
       } catch (e) {
         logger('[wait signal]', e);

@@ -1,6 +1,6 @@
-// import React from 'react';
-// import App from './app.js';
-// import { render } from 'ink';
+import React from 'react';
+import App from './ui/app.js';
+import { render } from 'ink';
 
 import crypto from 'crypto';
 import config from './config/index.js';
@@ -16,7 +16,24 @@ const handler = async ({ room, mode, nickname }) => {
     ? crypto.randomUUID()
     : room || fallbackTopicID;
 
-  peers[mode](node, topicID, nickname);
+  const { sessionKey, authPeerID } = await peers[mode]({
+    node,
+    topicID,
+    nickname,
+  });
+  const { id: ownID } = await node.id();
+
+  console.clear();
+  render(
+    <App
+      sessionKey={sessionKey}
+      authPeerID={authPeerID}
+      ownID={ownID}
+      node={node}
+      nickname={nickname}
+      topicID={topicID}
+    />
+  );
 };
 
 export default handler;

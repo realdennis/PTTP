@@ -1,45 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { Text } from 'ink';
 
-const useIpfsPubSubMessage = (ipfsNode, topic) => {
+const useIpfsSubMessage = ({ node, topicID, authPeerID, sessionKey }) => {
   const [messages, setMessages] = useState([]);
-
-  const callback = (message) => {
-    const { data } = message;
-    message.key = `${data.toString('utf8')}-${Date.now()}`; // create the unique key
-    setMessages((messages) => [...messages, message]);
-  };
-
-  const connectRequestCallback = (message) => {
-    const { data } = message;
-    const { nickname, text } = data;
-    if (text === 'connect_request') {
-      // log('connect_request')
+  const callback = (payload) => {
+    const { cipherText, from, nickname } = payload;
+    if (from !== authPeerID) {
+      return;
     }
+    setMessages((messages) => [
+      ...messages,
+      {
+        text: cipherText,
+        nickname,
+        key: `${ciphertext}-${Date.now()}`,
+      },
+    ]);
   };
-
   useEffect(() => {
-    ipfsNode.pubsub.subscribe(topic, callback);
-    return () => ipfsNode.pubsub.unsubscribe(topic, callback);
+    node.pubsub.subscribe(topicID, callback);
+    return () => node.pubsub.unsubscribe(topicID, callback);
   }, []);
-
-  useEffect(() => {
-    ipfsNode.pubsub.subscribe(topic, connectRequestCallback);
-    return () => ipfsNode.pubsub.unsubscribe(topic, connectRequestCallback);
-  }, []);
-
   return messages;
 };
 
-const App = ({ nickname, ipfsNode, topicID }) => {
-  const messages = useIpfsPubSubMessage(ipfsNode, topicID);
+const App = ({ nickname, node, sessionKey, authPeerID, topicID }) => {
+  const messages = useIpfsSubMessage({ node, topicID, authPeerID, sessionKey });
   return (
     <>
       <Text color="red">Nickname: {nickname}</Text>
       <Text color="red">Roomname: {topicID}</Text>
-      <Text color="green">$ ptp join {topicID}</Text>
-      {messages.map(({ data, key }) => (
-        <Text key={key}>{data.toString('utf8')}</Text>
+      {messages.map((message) => (
+        <>
+          <Text key={message.key}>
+            {message.nickname}:{message.text}
+          </Text>
+        </>
       ))}
     </>
   );
