@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "ink": "^3.0.8",
+    "inquirer": "^8.1.0",
     "ipfs-core": "^0.7.0",
     "react": "^16.14.0",
     "yargs": "^17.0.1",
