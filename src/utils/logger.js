@@ -1,6 +1,6 @@
-import isDev from "./isDev.js";
+import isDev from './isDev.js';
 const logger = isDev
-  ? (message) => console.log(`[DEBUG]: ${message}`)
+  ? (...message) => console.info('[DEBUG]: ', ...message)
   : () => {};
 
 export default logger;
