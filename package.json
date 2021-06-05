@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "ink": "^3.0.8",
+    "ink-text-input": "^4.0.1",
     "inquirer": "^8.1.0",
     "ipfs-core": "^0.7.0",
     "react": "^16.14.0",
