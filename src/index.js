@@ -1,49 +1,21 @@
 #!/usr/bin/env node
-import React from 'react';
-import App from './app.js';
-import { render } from 'ink';
-
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
-import getNode from './lib/getNode.js';
-import crypto from 'crypto';
-
-import config from './config/index.js';
-
-import isDev from './utils/isDev.js';
-
+import handler from './handler.js';
 const main = async () => {
-  const node = await getNode();
-
-  const { nickname } = yargs(hideBin(process.argv)).option('nickname', {
-    type: 'string',
-    description: 'nickname, default is anomymous',
-    default: 'anomymous',
-  }).argv;
-
-  const handler = ({ room, mode }) => {
-    let topicID;
-    if (mode === 'create') {
-      topicID = crypto.randomUUID();
-    }
-    if (mode === 'join') {
-      topicID = room;
-    }
-    if (isDev) {
-      // override if dev mode
-      topicID = config.debug.topic;
-    }
-    render(<App nickname={nickname} ipfsNode={node} topicID={topicID} />);
-  };
-
   yargs(hideBin(process.argv))
     .scriptName('ptp')
+    .option('nickname', {
+      type: 'string',
+      description: 'nickname, default is anomymous',
+      default: 'anomymous',
+    })
     .command(
       'create',
       'create the unique room!',
       () => {},
-      () => handler({ mode: 'create' })
+      async ({ nickname }) => await handler({ mode: 'create', nickname })
     )
     .command(
       'join [room]',
@@ -55,7 +27,8 @@ const main = async () => {
           describe: 'join [uuid]',
         });
       },
-      ({ room }) => handler({ room, mode: 'join' })
+      async ({ room, nickname }) =>
+        await handler({ room, mode: 'join', nickname })
     )
     .demandCommand(1, 'You need at least one command.')
     .help().argv;

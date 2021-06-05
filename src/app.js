@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text } from 'ink';
-import logger from './utils/logger.js';
 
 const useIpfsPubSubMessage = (ipfsNode, topic) => {
   const [messages, setMessages] = useState([]);
