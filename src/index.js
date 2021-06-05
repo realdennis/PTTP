@@ -15,10 +15,7 @@ const main = async () => {
       'create',
       'create the unique room!',
       () => {},
-      async ({ nickname }) => {
-        console.log('create...', nickname);
-        handler({ mode: 'create', nickname });
-      }
+      ({ nickname }) => handler({ mode: 'create', nickname })
     )
     .command(
       'join [room]',
