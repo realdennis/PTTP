@@ -8,13 +8,19 @@ const waitSignal = (node, topic, payload, timeout) =>
 
       const decoder = new TextDecoder();
       const dataString = decoder.decode(data);
-      const otherPeerPayload = JSON.parse(dataString);
+      try {
+        // since the data could be other people in the same topic(room)
+        const otherPeerPayload = JSON.parse(dataString);
 
-      if (otherPeerPayload.type === payload.type && from !== id) {
-        logger('[wait signal] action type=', otherPeerPayload.type);
-        // cleanup
-        node.pubsub.unsubscribe(topic, callback);
-        resolve({ ...otherPeerPayload, from });
+        if (otherPeerPayload.type === payload.type && from !== id) {
+          logger('[wait signal] action type=', otherPeerPayload.type);
+          // cleanup
+          node.pubsub.unsubscribe(topic, callback);
+          resolve({ ...otherPeerPayload, from });
+        }
+      } catch (e) {
+        logger('[wait signal]', e);
+        // do nothing
       }
     };
     node.pubsub.subscribe(topic, callback);
