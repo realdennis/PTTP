@@ -8,13 +8,14 @@ import ACTION from '../constants/action.js';
 
 import logger from '../utils/logger.js';
 
-const create = async ({ node, topicID, nickname, primeHex }) => {
+const create = async (options) => {
+  const { node, topic, nickname, primeHex } = options;
   const alice = getDeffienHellmanAlice(primeHex);
   const alicePub = alice.getPublicKey();
 
   console.log(`Run the above command in other machine:
-    $ ptp join ${topicID}`);
-  const otherPeerPayload = await waitSignal(node, topicID, {
+    $ ptp join ${topic}`);
+  const otherPeerPayload = await waitSignal(options, {
     type: ACTION.REQUEST_CONNECT,
   });
   const bobPub = otherPeerPayload.key;
@@ -34,8 +35,7 @@ const create = async ({ node, topicID, nickname, primeHex }) => {
   }
 
   const stopApproveSignal = sendSignalWithRetry(
-    node,
-    topicID,
+    options,
     {
       nickname,
       key: alicePub, // send the exchange key back
@@ -51,7 +51,7 @@ const create = async ({ node, topicID, nickname, primeHex }) => {
   spinner.color = 'yellow';
 
   spinner.start();
-  await waitSignal(node, topicID, {
+  await waitSignal(options, {
     type: ACTION.FINAL_CONNECT,
     from: otherPeerPayload.from,
   });

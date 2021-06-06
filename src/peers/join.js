@@ -8,7 +8,8 @@ import ACTION from '../constants/action.js';
 
 import logger from '../utils/logger.js';
 
-const join = async ({ node, topicID, nickname, primeHex }) => {
+const join = async (options) => {
+  const { node, topic, nickname, primeHex } = options;
   const alice = getDeffienHellmanAlice(primeHex);
   const alicePub = alice.getPublicKey();
 
@@ -16,8 +17,7 @@ const join = async ({ node, topicID, nickname, primeHex }) => {
   spinner.color = 'green';
   spinner.start();
   const stopRequestSignal = sendSignalWithRetry(
-    node,
-    topicID,
+    options,
     {
       type: ACTION.REQUEST_CONNECT,
       nickname,
@@ -28,7 +28,7 @@ const join = async ({ node, topicID, nickname, primeHex }) => {
       interval: 1 * 1000,
     }
   );
-  const otherPeerPayload = await waitSignal(node, topicID, {
+  const otherPeerPayload = await waitSignal(options, {
     type: ACTION.APPROVE_CONNECT,
   });
   stopRequestSignal();
@@ -49,8 +49,7 @@ const join = async ({ node, topicID, nickname, primeHex }) => {
 
   // automated cleanup
   sendSignalWithRetry(
-    node,
-    topicID,
+    options,
     {
       nickname,
       type: ACTION.FINAL_CONNECT,

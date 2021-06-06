@@ -1,9 +1,8 @@
 import logger from '../utils/logger.js';
-const waitSignal = (node, topic, conditionPayload, timeout) =>
+const waitSignal = ({ node, topic, ownPeerID }, conditionPayload, timeout) =>
   new Promise((resolve, reject) => {
     logger(`[wait signal] wait for ${conditionPayload.type}`);
     const callback = async (msg) => {
-      const { id } = await node.id();
       const { from, data } = msg;
 
       const decoder = new TextDecoder();
@@ -15,7 +14,7 @@ const waitSignal = (node, topic, conditionPayload, timeout) =>
           (key) => conditionPayload[key] === otherPeerPayload[key]
         );
 
-        if (isFulfilledPayload && from !== id) {
+        if (isFulfilledPayload && from !== ownPeerID) {
           const { key } = otherPeerPayload;
           const _key = (key && key.data && Buffer.from(key.data)) || undefined;
           // cleanup

@@ -1,10 +1,10 @@
+import logger from '../utils/logger.js';
 import sendSignal from './sendSignal.js';
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 // This is use for retry-considered signal
 const sendSignalWithRetry = (
-  node,
-  topic,
+  options,
   payload,
   retryOptions = {
     times: 2,
@@ -17,7 +17,7 @@ const sendSignalWithRetry = (
       if (shouldStop) {
         break;
       }
-      sendSignal(node, topic, payload);
+      sendSignal(options, payload);
       await wait(retryOptions.interval);
     }
 

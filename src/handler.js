@@ -9,41 +9,41 @@ import getNode from './lib/getNode.js';
 import peers from './peers/index.js';
 
 const handler = async (options) => {
-  const { room, mode, nickname } = options;
-
   const server = crypto.createDiffieHellman(64);
   let primeHex = isDev ? '0b' : server.getPrime('hex');
+  const { mode } = options;
 
   if (mode === 'join' && !isDev) {
     primeHex = room.split('-').pop();
   }
 
   const node = await getNode(options);
-  const topicID = isDev
+  const topic = isDev
     ? config.debug.topic
     : mode === 'create'
     ? primeHex
     : room;
 
+  const { id: ownPeerID } = await node.id();
+
   const { sessionKey, authPeerID } = await peers[mode]({
     node,
-    topicID,
-    nickname,
+    topic,
+    ownPeerID,
     primeHex,
+    ...options,
   });
-  const { id: ownID } = await node.id();
+
+  const appInitialProps = {
+    ...options,
+    node,
+    sessionKey,
+    authPeerID,
+    ownPeerID,
+  };
 
   !isDev && console.clear();
-  render(
-    <App
-      sessionKey={sessionKey}
-      authPeerID={authPeerID}
-      ownID={ownID}
-      node={node}
-      nickname={nickname}
-      topicID={topicID}
-    />
-  );
+  render(<App {...appInitialProps} />);
 };
 
 export default handler;

@@ -5,7 +5,7 @@ import TextInput from 'ink-text-input';
 const useIpfsSubMessage = ({
   node,
   nickname,
-  topicID,
+  topic,
   authPeerID,
   sessionKey,
 }) => {
@@ -26,23 +26,23 @@ const useIpfsSubMessage = ({
     ]);
   };
   useEffect(() => {
-    node.pubsub.subscribe(topicID, callback);
-    return () => node.pubsub.unsubscribe(topicID, callback);
+    node.pubsub.subscribe(topic, callback);
+    return () => node.pubsub.unsubscribe(topic, callback);
   }, []);
 
   const sendMessage = (text) =>
-    node.pubsub.publish(topicID, {
+    node.pubsub.publish(topic, {
       cipherText: text,
       nickname,
     });
   return [messages, sendMessage];
 };
 
-const App = ({ nickname, node, sessionKey, authPeerID, ownID, topicID }) => {
+const App = ({ nickname, node, sessionKey, authPeerID, topic }) => {
   const [messages, sendMessage] = useIpfsSubMessage({
     node,
     nickname,
-    topicID,
+    topic,
     authPeerID,
     sessionKey,
   });
@@ -52,7 +52,7 @@ const App = ({ nickname, node, sessionKey, authPeerID, ownID, topicID }) => {
   return (
     <>
       <Text color="red">Nickname: {nickname}</Text>
-      <Text color="red">Roomname: {topicID}</Text>
+      <Text color="red">Roomname: {topic}</Text>
     </>
   );
 };
