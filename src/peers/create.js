@@ -1,7 +1,7 @@
 import inquire from 'inquirer';
 import ora from 'ora';
 import waitSignal from '../lib/waitSignal.js';
-import sendSignal from '../lib/sendSignal.js';
+import sendSignalWithRetry from '../lib/sendSignalWithRetry.js';
 import getDeffienHellmanAlice from '../lib/getDeffienHellmanAlice.js';
 
 import ACTION from '../constants/action.js';
@@ -32,11 +32,20 @@ const create = async ({ node, topicID, nickname, primeHex }) => {
     node.repo.gc();
     process.exit();
   }
-  sendSignal(node, topicID, {
-    nickname,
-    key: alicePub, // send the exchange key back
-    type: ACTION.APPROVE_CONNECT,
-  });
+
+  const stopApproveSignal = sendSignalWithRetry(
+    node,
+    topicID,
+    {
+      nickname,
+      key: alicePub, // send the exchange key back
+      type: ACTION.APPROVE_CONNECT,
+    },
+    {
+      times: 5,
+      interval: 1 * 1000,
+    }
+  );
 
   const spinner = ora("Wait for peer's approval...");
   spinner.color = 'yellow';
@@ -46,6 +55,7 @@ const create = async ({ node, topicID, nickname, primeHex }) => {
     type: ACTION.FINAL_CONNECT,
     from: otherPeerPayload.from,
   });
+  stopApproveSignal();
   spinner.stop();
   logger('[handler] [create] done');
   return {
