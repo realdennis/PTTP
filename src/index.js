@@ -8,14 +8,19 @@ const main = async () => {
     .scriptName('ptp')
     .option('nickname', {
       type: 'string',
-      description: 'nickname, default is anomymous',
+      description: 'your nickname',
       default: 'anomymous',
+    })
+    .option('dynamic', {
+      type: 'boolean',
+      description: 'dynamic repo, enable if you up multiple session',
+      default: false,
     })
     .command(
       'create',
       'create the unique room!',
       () => {},
-      ({ nickname }) => handler({ mode: 'create', nickname })
+      (options) => handler({ mode: 'create', ...options })
     )
     .command(
       'join [room]',
@@ -27,8 +32,7 @@ const main = async () => {
           describe: 'join [uuid]',
         });
       },
-      async ({ room, nickname }) =>
-        await handler({ room, mode: 'join', nickname })
+      (options) => handler({ mode: 'join', ...options })
     )
     .demandCommand(1, 'You need at least one command.')
     .help().argv;
