@@ -47,7 +47,7 @@ const join = async ({ node, topicID, nickname, primeHex }) => {
   }
   sendSignal(node, topicID, {
     nickname,
-    type: ACTION.FINNAL_CONNECT,
+    type: ACTION.FINAL_CONNECT,
   });
   logger('[handler] [join] done');
   return {

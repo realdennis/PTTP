@@ -8,7 +8,7 @@ import ACTION from '../constants/action.js';
 
 import logger from '../utils/logger.js';
 
-const create = async ({node, topicID, nickname,primeHex}) => {
+const create = async ({ node, topicID, nickname, primeHex }) => {
   const alice = getDeffienHellmanAlice(primeHex);
   const alicePub = alice.getPublicKey();
 
@@ -43,7 +43,7 @@ const create = async ({node, topicID, nickname,primeHex}) => {
 
   spinner.start();
   await waitSignal(node, topicID, {
-    type: ACTION.FINNAL_CONNECT,
+    type: ACTION.FINAL_CONNECT,
     from: otherPeerPayload.from,
   });
   spinner.stop();
