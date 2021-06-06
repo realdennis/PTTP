@@ -10,7 +10,7 @@ import peers from './peers/index.js';
 
 const handler = async ({ room, mode, nickname }) => {
   const server = crypto.createDiffieHellman(64);
-  let primeHex = server.getPrime('hex');
+  const primeHex = isDev ? '0b' : server.getPrime('hex');
 
   if (mode === 'join' && !isDev) {
     primeHex = room.split('-').pop();
@@ -20,7 +20,7 @@ const handler = async ({ room, mode, nickname }) => {
   const topicID = isDev
     ? config.debug.topic
     : mode === 'create'
-    ? `${crypto.randomUUID()}-${primeHex}`
+    ? primeHex
     : room;
 
   const { sessionKey, authPeerID } = await peers[mode]({
@@ -31,7 +31,7 @@ const handler = async ({ room, mode, nickname }) => {
   });
   const { id: ownID } = await node.id();
 
-  console.clear();
+  !isDev && console.clear();
   render(
     <App
       sessionKey={sessionKey}
