@@ -12,6 +12,14 @@ const main = async () => {
       default: 'anomymous',
     })
     .option('dynamic', {
+      /**
+       * We could not attach the exist repo lock file in the same time.
+       * In default case (dynamic===false), we create the two independent repo `create` and `join`
+       * if you want create more seesion, you need to use different repo, enable this.
+       *
+       * Note: This is a known isssue, since we don't have a better way to do the repo gc.
+       * You can remove the unused repo using $ npm run clean
+       */
       type: 'boolean',
       description: 'dynamic repo, enable if you up multiple session',
       default: false,

@@ -8,7 +8,7 @@ const getNode = async ({ mode = '', dynamic }) => {
    * Dynamic override the ipfs config of the repo name
    * to the folder/create and folder/join.
    */
-  const { repo: _repo } = config.ipfs;
+  const { repo: _repo = '' } = config.ipfs;
 
   const dynamicName = dynamic ? crypto.randomUUID() : 'static';
   const repo = path.resolve(_repo, mode, dynamicName);
