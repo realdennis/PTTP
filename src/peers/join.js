@@ -2,7 +2,6 @@ import inquire from 'inquirer';
 import ora from 'ora';
 import waitSignal from '../lib/waitSignal.js';
 import sendSignalWithRetry from '../lib/sendSignalWithRetry.js';
-import getDeffienHellmanAlice from '../lib/getDeffienHellmanAlice.js';
 
 import ACTION from '../constants/action.js';
 
