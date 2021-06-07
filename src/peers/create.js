@@ -2,24 +2,21 @@ import inquire from 'inquirer';
 import ora from 'ora';
 import waitSignal from '../lib/waitSignal.js';
 import sendSignalWithRetry from '../lib/sendSignalWithRetry.js';
-import getDeffienHellmanAlice from '../lib/getDeffienHellmanAlice.js';
 
 import ACTION from '../constants/action.js';
 
 import logger from '../utils/logger.js';
 
 const create = async (options) => {
-  const { node, topic, nickname, primeHex } = options;
-  const alice = getDeffienHellmanAlice(primeHex);
-  const alicePub = alice.getPublicKey();
-
+  const { node, topic, nickname, peerDH } = options;
+  const pubKey = peerDH.getPublicKey();
   console.log(`Run the above command in other machine:
     $ ptp join ${topic}`);
   const otherPeerPayload = await waitSignal(options, {
     type: ACTION.REQUEST_CONNECT,
   });
   const bobPub = otherPeerPayload.key;
-  const aliceBobSecret = alice.computeSecret(bobPub);
+  const sessionKey = peerDH.computeSecret(bobPub);
 
   logger('[create] [other peer payload]', otherPeerPayload);
 
@@ -38,7 +35,7 @@ const create = async (options) => {
     options,
     {
       nickname,
-      key: alicePub, // send the exchange key back
+      key: pubKey, // send the exchange key back
       type: ACTION.APPROVE_CONNECT,
     },
     {
@@ -59,7 +56,7 @@ const create = async (options) => {
   spinner.stop();
   logger('[handler] [create] done');
   return {
-    sessionKey: aliceBobSecret,
+    sessionKey,
     authPeerID: otherPeerPayload.from,
   };
 };

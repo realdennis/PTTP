@@ -2,21 +2,23 @@ import React from 'react';
 import App from './ui/app.js';
 import { render } from 'ink';
 
-import crypto from 'crypto';
 import config from './config/index.js';
 import isDev from './utils/isDev.js';
 import getNode from './lib/getNode.js';
 import peers from './peers/index.js';
-
+import { getDeffieHellmanPeer, getPrimeHex } from './lib/getDeffieHellman';
+import logger from './utils/logger.js';
 const handler = async (options) => {
-  const { room } = options;
-  const server = crypto.createDiffieHellman(64);
-  let primeHex = isDev ? '0b' : server.getPrime('hex');
-  const { mode } = options;
+  const { room, mode } = options;
 
-  if (mode === 'join' && !isDev) {
-    primeHex = room.split('-').pop();
-  }
+  const primeHex = isDev
+    ? '0b'
+    : mode === 'join'
+    ? room.split('-').pop()
+    : getPrimeHex();
+
+  logger('[handler] primeHex', primeHex);
+  const peerDH = getDeffieHellmanPeer(primeHex);
 
   const node = await getNode(options);
   const topic = isDev
@@ -31,10 +33,11 @@ const handler = async (options) => {
     node,
     topic,
     ownPeerID,
-    primeHex,
+    peerDH,
     ...options,
   });
 
+  logger('[handler] [session key]', sessionKey);
   const appInitialProps = {
     ...options,
     node,

@@ -9,9 +9,8 @@ import ACTION from '../constants/action.js';
 import logger from '../utils/logger.js';
 
 const join = async (options) => {
-  const { node, topic, nickname, primeHex } = options;
-  const alice = getDeffienHellmanAlice(primeHex);
-  const alicePub = alice.getPublicKey();
+  const { node, nickname, peerDH } = options;
+  const pubKey = peerDH.getPublicKey();
 
   const spinner = ora('Request to join the room...');
   spinner.color = 'green';
@@ -21,7 +20,7 @@ const join = async (options) => {
     {
       type: ACTION.REQUEST_CONNECT,
       nickname,
-      key: alicePub,
+      key: pubKey,
     },
     {
       times: 5,
@@ -34,7 +33,7 @@ const join = async (options) => {
   stopRequestSignal();
   spinner.stop();
   const bobPub = otherPeerPayload.key;
-  const aliceBobSecret = alice.computeSecret(bobPub);
+  const sessionKey = peerDH.computeSecret(bobPub);
 
   const answer = await inquire.prompt({
     name: ACTION.APPROVE_CONNECT,
@@ -61,7 +60,7 @@ const join = async (options) => {
   );
   logger('[handler] [join] done');
   return {
-    sessionKey: aliceBobSecret,
+    sessionKey,
     authPeerID: otherPeerPayload.from,
   };
 };
