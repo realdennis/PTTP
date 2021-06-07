@@ -3,20 +3,22 @@
   "version": "1.0.0",
   "description": "PTP: Peer talks to Peer, p2p private chat, CLI tool.",
   "main": "index.js",
-  "type": "module",
   "author": "realdennis",
   "license": "MIT",
   "bin": "dist/index.js",
   "scripts": {
     "build": "babel src/ -d dist/",
-    "start": "node ./dist create",
-    "start:dev": "NODE_ENV=dev node --inspect ./dist create",
+    "start:create": "node ./dist create",
+    "start:create:dev": "NODE_ENV=dev node --inspect ./dist create",
+    "start:join": "node ./dist join",
+    "start:join:dev": "NODE_ENV=dev node --inspect ./dist join",
     "dev": "nodemon",
     "clean": "zx scripts/clean.mjs",
     "prepublishOnly": "npm run build",
     "postinstall": "npm run clean && npm run build"
   },
   "dependencies": {
+    "@babel/runtime": "^7.14.0",
     "ink": "^3.0.8",
     "ink-text-input": "^4.0.1",
     "inquirer": "^8.1.0",
@@ -29,6 +31,7 @@
     "@babel/cli": "^7.14.3",
     "@babel/core": "^7.14.3",
     "@babel/node": "^7.14.2",
+    "@babel/plugin-transform-runtime": "^7.14.3",
     "@babel/preset-env": "^7.14.4",
     "@babel/preset-react": "^7.13.13",
     "nodemon": "^2.0.7"
