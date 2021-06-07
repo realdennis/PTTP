@@ -49,8 +49,8 @@ const join = async (options) => {
   sendSignalWithRetry(
     options,
     {
-      nickname,
       type: ACTION.FINAL_CONNECT,
+      nickname,
     },
     {
       times: 5,
