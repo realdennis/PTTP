@@ -29,8 +29,9 @@ const handler = async (options) => {
 
   const { id: ownPeerID } = await node.id();
 
-  const { sessionKey, authPeerID } = await peers[mode]({
+  const { sessionKey, authPeerID } = await peers({
     node,
+    mode,
     topic,
     ownPeerID,
     peerDH,
