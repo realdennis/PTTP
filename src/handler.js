@@ -9,6 +9,7 @@ import getNode from './lib/getNode.js';
 import peers from './peers/index.js';
 
 const handler = async (options) => {
+  const { room } = options;
   const server = crypto.createDiffieHellman(64);
   let primeHex = isDev ? '0b' : server.getPrime('hex');
   const { mode } = options;
