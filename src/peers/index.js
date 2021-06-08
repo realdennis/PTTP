@@ -42,13 +42,11 @@ const peer = async (options) => {
   const bobPub = otherPeerPayload.key;
   const sessionKey = peerDH.computeSecret(bobPub);
 
-  console.log(1);
   const answer = await inquire.prompt({
     name: ACTION.APPROVE_CONNECT,
     type: 'confirm',
     message: `Do you want to connect with ${otherPeerPayload.nickname}?`,
   });
-  console.log(2);
   if (!answer[ACTION.APPROVE_CONNECT]) {
     console.log('You choose no, code exit');
     node.repo.gc();
