@@ -105,6 +105,7 @@ const ApprovingRoute = (props) => {
 };
 
 const App = (props) => {
+  const { peerDH } = props;
   const [otherPeerPayload, setOtherPeerPayload] = useState(null);
   const routeStop = React.useCallback(() => {
     console.log('exit');
@@ -141,6 +142,9 @@ const App = (props) => {
          */
         <>
           <Text>Connected</Text>
+          <Text>
+            Session key = {peerDH.computeSecret(otherPeerPayload.key)}
+          </Text>
         </>
       )}
     </Box>
