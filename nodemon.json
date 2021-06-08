@@ -1,5 +1,0 @@
-{
-  "watch": ["src", "config"],
-  "ext": "js",
-  "exec": "npm run build"
-}
