@@ -7,7 +7,7 @@ import ACTION from '../constants/action.js';
 
 import logger from '../utils/logger.js';
 
-const create = async (options) => {
+const peer = async (options) => {
   const { node, topic, nickname, peerDH, mode } = options;
   const pubKey = peerDH.getPublicKey();
   if (mode === 'create') {
@@ -79,11 +79,11 @@ const create = async (options) => {
     spinner && spinner.stop && spinner.stop();
     sendSignalCleanup && sendSignalCleanup();
   }
-  logger('[handler] [create] done');
+  logger('[peer] done');
   return {
     sessionKey,
     authPeerID: otherPeerPayload.from,
   };
 };
 
-export default create;
+export default peer;
