@@ -13,19 +13,20 @@
     "start:create:dev": "NODE_ENV=dev node --inspect ./dist create",
     "start:join": "node ./dist join",
     "start:join:dev": "NODE_ENV=dev node --inspect ./dist join",
-    "clean": "zx scripts/clean.mjs",
+    "clean": "rm -rf ~/.ptp-ipfs-repos",
     "prepublishOnly": "npm run build",
     "postinstall": "npm run clean && npm run build"
   },
   "dependencies": {
     "@babel/runtime": "^7.14.0",
     "ink": "^3.0.8",
+    "ink-big-text": "^1.2.0",
+    "ink-gradient": "^2.0.0",
+    "ink-spinner": "^4.0.2",
     "ink-text-input": "^4.0.1",
-    "inquirer": "^8.1.0",
     "ipfs-core": "^0.7.0",
     "react": "^16.14.0",
-    "yargs": "^17.0.1",
-    "zx": "^1.14.1"
+    "yargs": "^17.0.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.3",

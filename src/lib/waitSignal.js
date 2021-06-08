@@ -1,8 +1,10 @@
 import logger from '../utils/logger.js';
 const waitSignal = ({ node, topic, ownPeerID }, conditionPayload, timeout) =>
   new Promise((resolve, reject) => {
-    logger(`[wait signal] wait for ${conditionPayload.type}`);
+    logger('[wait signal] topic=', topic);
+    logger('[wait signal] conditionPayload=', conditionPayload);
     const callback = async (msg) => {
+      logger('[wait signal] triggered');
       const { from, data } = msg;
 
       const decoder = new TextDecoder();
