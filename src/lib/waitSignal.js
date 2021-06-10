@@ -17,13 +17,15 @@ const waitSignal = ({ node, topic, ownPeerID }, conditionPayload, timeout) =>
         );
 
         if (isFulfilledPayload && from !== ownPeerID) {
-          const { key } = otherPeerPayload;
-          const _key = (key && key.data && Buffer.from(key.data)) || undefined;
+          logger('[fulfilled payload]', otherPeerPayload);
+          const { pubKey } = otherPeerPayload;
+          const _key =
+            (pubKey && pubKey.data && Buffer.from(pubKey.data)) || undefined;
           // cleanup
           node.pubsub.unsubscribe(topic, callback);
           resolve(
             Object.assign({}, otherPeerPayload, {
-              key: _key,
+              pubKey: _key,
             })
           );
         }

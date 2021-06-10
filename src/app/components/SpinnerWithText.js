@@ -6,7 +6,7 @@ const SpinnerWithText = ({ text }) => {
     <Text>
       <Text color="green">
         <Spinner type="dots" />
-      </Text>
+      </Text>{' '}
       {text}
     </Text>
   );

@@ -7,7 +7,7 @@ const sendSignalWithRetry = (
   options,
   payload,
   retryOptions = {
-    times: 2,
+    times: 10,
     interval: 1 * 1000,
   }
 ) => {

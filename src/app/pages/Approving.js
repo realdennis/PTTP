@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Confirmation from '../components/Confirmation.js';
 import sendSignalWithRetry from '../../lib/sendSignalWithRetry.js';
-
 const ApprovingRoute = (props) => {
   /**
    * In approving state:
@@ -9,25 +8,30 @@ const ApprovingRoute = (props) => {
    * case join  : confirmation and send signal<request#3>
    */
 
-  const { mode, routeDone, routeStop, otherPeerPayload } = props;
+  const { mode, routeDone, setPending, routeStop, connectedUserInfo } = props;
   const [showConfirmation, setShowConfirmation] = useState(true);
   const waitRequestType = mode === 'create' ? 'request#2' : 'request#3';
 
   useEffect(() => {
+    return () => setPending({ isPending: false });
+  }, []);
+
+  useEffect(() => {
     if (showConfirmation) return;
-    const cleanupFn = sendSignalWithRetry(props, {
+    sendSignalWithRetry(props, {
       type: waitRequestType,
       nickname: props.nickname,
-      key: props.pubKey,
+      pubKey: props.pubKey,
     });
-    setTimeout(routeDone, 5000);
-    return cleanupFn;
+    // setPending({ isPending: true, text: 'Start to join the room...' });
+    routeDone();
+    return () => {};
   }, [showConfirmation]);
   return (
     <>
       {showConfirmation && (
         <Confirmation
-          question={`Do you want to connect with ${otherPeerPayload.nickname}?`}
+          question={`Do you want to connect with ${connectedUserInfo.nickname}?`}
           onSubmit={(answer) => {
             if (!answer) {
               routeStop();
