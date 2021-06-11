@@ -1,54 +1,71 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import logger from '../../utils/logger';
 import Usage from '../components/Usage.js';
 import sendSignalWithRetry from '../../lib/sendSignalWithRetry.js';
 import waitSignal from '../../lib/waitSignal.js';
 
-const InitialRoute = (props) => {
-  const {
-    peerDH,
-    topic,
-    setPending,
-    routeDone,
-    mode,
-    userInfo,
-    routeStop,
-    setConnectedUserInfo,
-    setEncrypt,
-  } = props;
+import context from '../state/context';
+import actionType from '../state/constants/actionType';
+
+const InitialRoute = () => {
+  const { ptpObject, peerDH, userInfo, dispatch } = useContext(context);
+  const { topic, mode } = ptpObject;
 
   const waitRequestType = mode === 'create' ? 'request#1' : 'request#2';
 
   useEffect(() => {
     if (mode === 'create') return;
-    setPending({ isPending: true });
-    return () => setPending({ isPending: false });
+    dispatch({
+      type: actionType.SET_PENDING_STATE,
+      payload: { isPending: true },
+    });
+    return () =>
+      dispatch({
+        type: actionType.SET_PENDING_STATE,
+        payload: { isPending: false },
+      });
   }, []);
 
   useEffect(() => {
     let cleanupFn;
     if (mode === 'join') {
       logger('[initial route][effect] Join');
-      cleanupFn = sendSignalWithRetry(props, {
+      cleanupFn = sendSignalWithRetry(ptpObject, {
         type: 'request#1',
         ...userInfo,
       });
     }
-    waitSignal(props, {
+    waitSignal(ptpObject, {
       type: waitRequestType,
     })
       .then((payload) => {
         logger('[initial route][effect] wait complete');
         logger('[initial page] [after wait signal trigger] payload=', payload);
-        setConnectedUserInfo(payload);
-        setEncrypt({
-          sessionKey: peerDH.computeSecret(payload.pubKey),
+        dispatch({
+          type: actionType.SET_CONNECTED_USER_INFO,
+          payload,
         });
-        routeDone();
+        dispatch({
+          type: actionType.SET_SESSION_KEY,
+          payload: {
+            sessionKey: peerDH.computeSecret(payload.pubKey),
+          },
+        });
+        dispatch({
+          type: actionType.ROUTE_CHANGE,
+          payload: {
+            route: 'Approving',
+          },
+        });
       })
       .catch((e) => {
         logger('[initial] error', e);
-        routeStop();
+        dispatch({
+          type: actionType.ROUTE_CHANGE,
+          payload: {
+            route: 'Exit',
+          },
+        });
       });
 
     return () => {

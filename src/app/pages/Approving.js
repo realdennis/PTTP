@@ -1,30 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Confirmation from '../components/Confirmation.js';
 import sendSignalWithRetry from '../../lib/sendSignalWithRetry.js';
-const ApprovingRoute = (props) => {
+import context from '../state/context.js';
+import actionType from '../state/constants/actionType';
+const ApprovingRoute = () => {
   /**
    * In approving state:
    * case create: confirmation and send signal<request#2>
    * case join  : confirmation and send signal<request#3>
    */
-
-  const { mode, routeDone, setPending, routeStop, connectedUserInfo } = props;
+  const { state, dispatch, userInfo, ptpObject } = useContext(context);
+  const { mode } = ptpObject;
+  const { connectedUserInfo } = state;
   const [showConfirmation, setShowConfirmation] = useState(true);
   const waitRequestType = mode === 'create' ? 'request#2' : 'request#3';
 
   useEffect(() => {
-    return () => setPending({ isPending: false });
+    return () =>
+      dispatch({
+        type: actionType.SET_PENDING_STATE,
+        payload: { isPending: false },
+      });
   }, []);
 
   useEffect(() => {
     if (showConfirmation) return;
-    sendSignalWithRetry(props, {
+    sendSignalWithRetry(ptpObject, {
       type: waitRequestType,
-      nickname: props.nickname,
-      pubKey: props.pubKey,
+      nickname: userInfo.nickname,
+      pubKey: userInfo.pubKey,
     });
     // setPending({ isPending: true, text: 'Start to join the room...' });
-    routeDone();
+    dispatch({
+      type: actionType.ROUTE_CHANGE,
+      payload: {
+        route: 'Connected',
+      },
+    });
     return () => {};
   }, [showConfirmation]);
   return (
@@ -34,7 +46,12 @@ const ApprovingRoute = (props) => {
           question={`Do you want to connect with ${connectedUserInfo.nickname}?`}
           onSubmit={(answer) => {
             if (!answer) {
-              routeStop();
+              dispatch({
+                type: actionType.ROUTE_CHANGE,
+                payload: {
+                  route: 'Exit',
+                },
+              });
             } else {
               setShowConfirmation(false);
             }

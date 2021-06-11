@@ -1,29 +1,28 @@
-import React, { useState, useCallback, useReducer } from 'react';
-import { Text, Box } from 'ink';
+import React, { useContext, useReducer } from 'react';
+import { Box } from 'ink';
 import Welcome from './components/Welcome.js';
 import SpinnerWithText from './components/SpinnerWithText.js';
-import InitialRoute from './pages/Initial.js';
-import ApprovingRoute from './pages/Approving.js';
-import ExitRoute from './pages/Exit.js';
-import actionType from './constants/actionType.js';
-import rootReducer from './rootReducer.js';
+import Pages from './pages';
+import rootReducer from './state/rootReducer.js';
 import logger from '../utils/logger.js';
+import Context from './state/context';
+
+const Route = () => {
+  const { state } = useContext(Context);
+  const Page = Pages[state.route];
+  return <Page />;
+};
 
 const App = (props) => {
-  const { peerDH } = props;
+  const { peerDH, node, mode, topic, dynamic } = props;
   /**
-   * peer state: "initial", "approving", "chat"
+   * peer state: "Initial", "Approving", "Connected", "Exit"
    */
   const [state, dispatch] = useReducer(rootReducer, {
-    route: 'initial',
+    route: 'Initial',
     pending: {
       isPending: false,
       text: "Waiting for the other peer's response",
-    },
-    userInfo: {
-      peerID: props.ownPeerID,
-      nickname: props.nickname,
-      pubKey: props.pubKey,
     },
     connectedUserInfo: {
       peerID: '',
@@ -35,69 +34,38 @@ const App = (props) => {
     },
   });
   logger('[app] [state]', state);
-  const routeStop = useCallback(() =>
-    dispatch({ type: actionType.ROUTE_CHANGE, payload: { route: 'exit' } })
-  );
   return (
-    <Box flexDirection="column">
-      <Welcome />
-      {state.route === 'exit' && <ExitRoute />}
-      {state.route === 'initial' && (
-        <InitialRoute
-          {...props}
-          userInfo={state.userInfo}
-          setConnectedUserInfo={(payload) =>
-            dispatch({ type: actionType.SET_CONNECTED_USER_INFO, payload })
-          }
-          setPending={(payload) =>
-            dispatch({ type: actionType.SET_PENDING_STATE, payload })
-          }
-          peerDH={peerDH}
-          setEncrypt={(payload) =>
-            dispatch({ type: actionType.SET_SESSION_KEY, payload })
-          }
-          routeDone={() =>
-            dispatch({
-              type: actionType.ROUTE_CHANGE,
-              payload: { route: 'approving' },
-            })
-          }
-          routeStop={routeStop}
-        />
-      )}
-      {state.route === 'approving' && (
-        <ApprovingRoute
-          {...props}
-          pending={state.pending}
-          setPending={(payload) =>
-            dispatch({ type: actionType.SET_PENDING_STATE, payload })
-          }
-          userInfo={state.userInfo}
-          connectedUserInfo={state.connectedUserInfo}
-          routeDone={() =>
-            dispatch({
-              type: actionType.ROUTE_CHANGE,
-              payload: { route: 'connected' },
-            })
-          }
-          routeStop={routeStop}
-        />
-      )}
-      {state.route === 'connected' && (
-        /**
-         * In connected state
-         *
-         */
-        <>
-          <Text>
-            Connected with{' '}
-            <Text color="green">{state.connectedUserInfo.nickname}</Text>
-          </Text>
-          <Text>Session key = {state.encrypt.sessionKey}</Text>
-        </>
-      )}
-      {state.pending.isPending && <SpinnerWithText text={state.pending.text} />}
-    </Box>
+    <Context.Provider
+      value={{
+        // ptpObject is for ptp inner ipfs library usage like ipfs node instance, topic, peerID
+        ptpObject: {
+          node,
+          mode,
+          topic,
+          ownPeerID: props.ownPeerID,
+          dynamic /** command option for multi addr */,
+        },
+        // state irrelevent
+        peerDH,
+        userInfo: {
+          peerID: props.ownPeerID,
+          nickname: props.nickname,
+          pubKey: props.pubKey,
+        },
+
+        // root state and dispatch
+        state,
+        dispatch,
+      }}
+    >
+      <Box flexDirection="column">
+        <Welcome />
+        <Route />
+        {state.pending.isPending && (
+          <SpinnerWithText text={state.pending.text} />
+        )}
+      </Box>
+    </Context.Provider>
   );
 };
 
