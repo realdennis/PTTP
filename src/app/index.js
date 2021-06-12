@@ -60,7 +60,7 @@ const App = (props) => {
       }}
     >
       <Box flexDirection="column">
-        <Welcome />
+        {!(state.route === 'Connected') && <Welcome />}
         <Route />
         {state.pending.isPending && (
           <SpinnerWithText text={state.pending.text} />
