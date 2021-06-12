@@ -4,12 +4,15 @@ import context from '../state/context';
 
 const ConnectedRoute = () => {
   const { state } = useContext(context);
-  const { connectedUserInfo, encrypt: { sessionKey } = {} } = state;
+  const {
+    user: { connectedUser },
+    encrypt: { sessionKey } = {},
+  } = state;
 
   return (
     <>
       <Text>
-        Connected with <Text color="green">{connectedUserInfo.nickname}</Text>
+        Connected with <Text color="green">{connectedUser.nickname}</Text>
       </Text>
       <Text>Session key = {sessionKey}</Text>
     </>

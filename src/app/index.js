@@ -24,10 +24,17 @@ const App = (props) => {
       isPending: false,
       text: "Waiting for the other peer's response",
     },
-    connectedUserInfo: {
-      peerID: '',
-      nickname: '',
-      pubKey: '',
+    user: {
+      selfUser: {
+        peerID: props.ownPeerID,
+        nickname: props.nickname,
+        pubKey: props.pubKey,
+      },
+      connectedUser: {
+        peerID: '',
+        nickname: '',
+        pubKey: '',
+      },
     },
     encrypt: {
       sessionKey: '',
@@ -47,12 +54,6 @@ const App = (props) => {
         },
         // state irrelevent
         peerDH,
-        userInfo: {
-          peerID: props.ownPeerID,
-          nickname: props.nickname,
-          pubKey: props.pubKey,
-        },
-
         // root state and dispatch
         state,
         dispatch,

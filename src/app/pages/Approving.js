@@ -9,9 +9,11 @@ const ApprovingRoute = () => {
    * case create: confirmation and send signal<request#2>
    * case join  : confirmation and send signal<request#3>
    */
-  const { state, dispatch, userInfo, ptpObject } = useContext(context);
+  const { state, dispatch, ptpObject } = useContext(context);
   const { mode } = ptpObject;
-  const { connectedUserInfo } = state;
+  const {
+    user: { connectedUser, selfUser },
+  } = state;
   const [showConfirmation, setShowConfirmation] = useState(true);
   const waitRequestType = mode === 'create' ? 'request#2' : 'request#3';
 
@@ -27,8 +29,8 @@ const ApprovingRoute = () => {
     if (showConfirmation) return;
     sendSignalWithRetry(ptpObject, {
       type: waitRequestType,
-      nickname: userInfo.nickname,
-      pubKey: userInfo.pubKey,
+      nickname: selfUser.nickname,
+      pubKey: selfUser.pubKey,
     });
     // setPending({ isPending: true, text: 'Start to join the room...' });
     dispatch({
@@ -43,7 +45,7 @@ const ApprovingRoute = () => {
     <>
       {showConfirmation && (
         <Confirmation
-          question={`Do you want to connect with ${connectedUserInfo.nickname}?`}
+          question={`Do you want to connect with ${connectedUser.nickname}?`}
           onSubmit={(answer) => {
             if (!answer) {
               dispatch({

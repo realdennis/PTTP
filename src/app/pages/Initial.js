@@ -8,9 +8,11 @@ import context from '../state/context';
 import actionType from '../state/constants/actionType';
 
 const InitialRoute = () => {
-  const { ptpObject, peerDH, userInfo, dispatch } = useContext(context);
+  const { ptpObject, peerDH, state, dispatch } = useContext(context);
   const { topic, mode } = ptpObject;
-
+  const {
+    user: { selfUser },
+  } = state;
   const waitRequestType = mode === 'create' ? 'request#1' : 'request#2';
 
   useEffect(() => {
@@ -32,7 +34,7 @@ const InitialRoute = () => {
       logger('[initial route][effect] Join');
       cleanupFn = sendSignalWithRetry(ptpObject, {
         type: 'request#1',
-        ...userInfo,
+        ...selfUser,
       });
     }
     waitSignal(ptpObject, {
