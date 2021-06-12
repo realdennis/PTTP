@@ -14,6 +14,11 @@ const getNode = async ({ mode = '', dynamic }) => {
   const repo = path.resolve(_repo, mode, dynamicName);
   const ipfsConfig = Object.assign({}, config.ipfs, {
     repo,
+    config: {
+      Addresses: {
+        Swarm: ['/ip4/0.0.0.0/tcp/0', '/ip4/127.0.0.1/tcp/0/ws'],
+      },
+    },
   });
   const node = await Ipfs.create(ipfsConfig);
   return node;
