@@ -1,4 +1,5 @@
 import React, { useContext, useEffect } from 'react';
+import getInitializationVector from '../../lib/getInitializationVector';
 import logger from '../../utils/logger';
 import Usage from '../components/Usage.js';
 import sendSignalWithRetry from '../../lib/sendSignalWithRetry.js';
@@ -31,10 +32,19 @@ const InitialRoute = () => {
   useEffect(() => {
     let cleanupFn;
     if (mode === 'join') {
+      // join peer provides the initialization vector for encrypt
+      const iv = getInitializationVector();
+      dispatch({
+        type: actionType.SET_INITIALIZATION_VECTOR,
+        payload: {
+          iv,
+        },
+      });
       logger('[initial route][effect] Join');
       cleanupFn = sendSignalWithRetry(ptpObject, {
         type: 'request#1',
         ...selfUser,
+        iv,
       });
     }
     waitSignal(ptpObject, {
@@ -43,6 +53,7 @@ const InitialRoute = () => {
       .then((payload) => {
         logger('[initial route][effect] wait complete');
         logger('[initial page] [after wait signal trigger] payload=', payload);
+
         dispatch({
           type: actionType.SET_CONNECTED_USER_INFO,
           payload,
@@ -53,6 +64,14 @@ const InitialRoute = () => {
             sessionKey: peerDH.computeSecret(payload.pubKey),
           },
         });
+        if (mode === 'create') {
+          dispatch({
+            type: actionType.SET_INITIALIZATION_VECTOR,
+            payload: {
+              iv: payload.iv,
+            },
+          });
+        }
         dispatch({
           type: actionType.ROUTE_CHANGE,
           payload: {

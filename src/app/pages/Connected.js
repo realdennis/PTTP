@@ -1,33 +1,36 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import { Text, Box } from 'ink';
 import context from '../state/context';
 import ChatInput from '../components/ChatInput';
 import logger from '../../utils/logger';
 import sendSignal from '../../lib/sendSignal';
+import getAES192 from '../../lib/aes192';
+
 const ConnectedRoute = () => {
   const { state, ptpObject } = useContext(context);
   const {
     user: { selfUser, connectedUser },
-    encrypt: { sessionKey } = {},
+    encrypt: { sessionKey, iv } = {},
   } = state;
   const { node, topic } = ptpObject;
   const [messages, setMessages] = useState([]);
-
+  const cipherRef = useRef(getAES192(sessionKey, iv));
   useEffect(() => {
     const subCallback = (signal) => {
-      logger('[subCallback] mes=', signal);
       try {
         const { data } = signal;
         const decoder = new TextDecoder();
         const dataString = decoder.decode(data) || '';
         const serializeMes = JSON.parse(dataString);
         if (serializeMes.type !== 'CHAT_MESSAGE') return;
+        logger('[subCallback] message before decrypt =', serializeMes);
+        // serializeMes
         setMessages((messages) => {
           const messagesArr = [
             ...messages,
             {
               ...serializeMes,
-              key: Date.now() + '-' + serializeMes.text,
+              text: cipherRef.current.decrypt(serializeMes.cipherText),
             },
           ];
           return messagesArr.slice(Math.max(messagesArr.length - 10, 0));
@@ -45,8 +48,8 @@ const ConnectedRoute = () => {
     sendSignal(ptpObject, {
       type: 'CHAT_MESSAGE',
       ...selfUser,
-      text: value,
-      key: Date.now(),
+      cipherText: cipherRef.current.encrypt(value),
+      timestamp: Date.now(),
     });
   return (
     <Box flexDirection="column" height="100%">
@@ -64,7 +67,7 @@ const ConnectedRoute = () => {
         {messages.map((mes) => {
           const isMessageFromMe = mes.peerID === selfUser.peerID;
           return (
-            <Box key={mes.key}>
+            <Box key={mes.timestamp + '-' + mes.cipherText}>
               {isMessageFromMe && <Text>(me) </Text>}
               <Text color={isMessageFromMe ? 'blue' : 'green'}>
                 {mes.nickname}

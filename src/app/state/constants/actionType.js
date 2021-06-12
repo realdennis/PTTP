@@ -13,4 +13,5 @@ export default {
 
   // encrypt info
   SET_SESSION_KEY: 'SET_SESSION_KEY',
+  SET_INITIALIZATION_VECTOR: 'SET_INITIALIZATION_VECTOR',
 };
