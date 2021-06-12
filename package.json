@@ -1,6 +1,6 @@
 {
   "name": "@realdennis/ptp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "PTP: Peer talks to Peer, p2p private chat, CLI tool.",
   "main": "index.js",
   "author": "realdennis",
@@ -14,8 +14,7 @@
     "start:join": "node ./dist join",
     "start:join:dev": "NODE_ENV=dev node --inspect ./dist join",
     "clean": "rm -rf ~/.ptp-ipfs-repos",
-    "prepublishOnly": "npm run build",
-    "postinstall": "npm run clean && npm run build"
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@babel/runtime": "^7.14.0",
