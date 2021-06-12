@@ -4,6 +4,7 @@ import TextInput from 'ink-text-input';
 const ChatInput = ({ onSend = () => {} }) => {
   const [value, setValue] = useState('');
   const handleSubmit = (value) => {
+    if (value === '') return;
     onSend(value);
     setValue('');
   };

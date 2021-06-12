@@ -1,16 +1,9 @@
-import logger from '../utils/logger.js';
 import sendSignal from './sendSignal.js';
+import retryOptions from '../config/retry';
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 // This is use for retry-considered signal
-const sendSignalWithRetry = (
-  options,
-  payload,
-  retryOptions = {
-    times: 10,
-    interval: 1 * 1000,
-  }
-) => {
+const sendSignalWithRetry = (options, payload) => {
   let shouldStop = false;
   const asyncTask = async () => {
     for (let i = 0; i < retryOptions.times; i++) {
