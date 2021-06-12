@@ -1,12 +1,12 @@
 import crypto from 'crypto';
 
-export const getDeffieHellmanPeer = (primeHex) => {
-  const peer = crypto.createDiffieHellman(Buffer.from(primeHex, 'hex'));
+export const getDeffieHellmanPeer = (primeB64) => {
+  const peer = crypto.createDiffieHellman(Buffer.from(primeB64, 'base64'));
   peer.generateKeys();
   return peer;
 };
 
-export const getPrimeHex = () => {
-  const server = crypto.createDiffieHellman(64);
-  return server.getPrime('hex');
+export const getPrimeB64 = () => {
+  const server = crypto.createDiffieHellman(192);
+  return server.getPrime('base64');
 };

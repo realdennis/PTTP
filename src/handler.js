@@ -5,25 +5,25 @@ import { render } from 'ink';
 import config from './config/index.js';
 import isDev from './utils/isDev.js';
 import getNode from './lib/getNode.js';
-import { getDeffieHellmanPeer, getPrimeHex } from './lib/getDeffieHellman';
+import { getDeffieHellmanPeer, getPrimeB64 } from './lib/getDeffieHellman';
 import logger from './utils/logger.js';
+
+// constant value which generate from getPrimeB64
+const devPrimeB64 = '9ZsJ8UcVVQK8eZw/zUwCTL0xEyU50ReL';
+
 const handler = async (options) => {
   const { room, mode } = options;
 
-  const primeHex = isDev
-    ? '0b'
-    : mode === 'join'
-    ? room.split('-').pop()
-    : getPrimeHex();
+  const primeB64 = isDev ? devPrimeB64 : mode === 'join' ? room : getPrimeB64();
 
-  logger('[handler] primeHex', primeHex);
-  const peerDH = getDeffieHellmanPeer(primeHex);
+  logger('[handler] primeB64', primeB64);
+  const peerDH = getDeffieHellmanPeer(primeB64);
   const pubKey = peerDH.getPublicKey();
   const node = await getNode(options);
   const topic = isDev
     ? config.debug.topic
     : mode === 'create'
-    ? primeHex
+    ? primeB64
     : room;
 
   const { id: ownPeerID } = await node.id();

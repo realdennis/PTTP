@@ -38,6 +38,7 @@ const App = (props) => {
     },
     encrypt: {
       sessionKey: '',
+      iv: '',
     },
   });
   logger('[app] [state]', state);
