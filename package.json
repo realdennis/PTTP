@@ -1,5 +1,5 @@
 {
-  "name": "ptp",
+  "name": "@realdennis/ptp",
   "version": "1.0.0",
   "description": "PTP: Peer talks to Peer, p2p private chat, CLI tool.",
   "main": "index.js",
