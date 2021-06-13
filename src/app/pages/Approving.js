@@ -26,9 +26,17 @@ const ApprovingRoute = () => {
         payload: { isPending: false },
       });
   }, []);
-
-  useEffect(() => {
-    if (showConfirmation) return;
+  const handleSubmit = async (answer) => {
+    setShowConfirmation(false);
+    if (!answer) {
+      dispatch({
+        type: actionType.ROUTE_CHANGE,
+        payload: {
+          route: 'Exit',
+        },
+      });
+      return;
+    }
     sendSignalWithRetry(ptpObject, {
       type: sendRequestType,
       nickname: selfUser.nickname,
@@ -39,47 +47,28 @@ const ApprovingRoute = () => {
         type: actionType.SET_PENDING_STATE,
         payload: { isPending: true, text: 'Wait for connection...' },
       });
-      waitSignal(ptpObject, {
+      await waitSignal(ptpObject, {
         type: waitRequestType,
-      }).then(() => {
-        dispatch({
-          type: actionType.SET_PENDING_STATE,
-          payload: { isPending: false },
-        });
-        dispatch({
-          type: actionType.ROUTE_CHANGE,
-          payload: {
-            route: 'Connected',
-          },
-        });
       });
-    } else {
       dispatch({
-        type: actionType.ROUTE_CHANGE,
-        payload: {
-          route: 'Connected',
-        },
+        type: actionType.SET_PENDING_STATE,
+        payload: { isPending: false },
       });
     }
-    return () => {};
-  }, [showConfirmation]);
+    dispatch({
+      type: actionType.ROUTE_CHANGE,
+      payload: {
+        route: 'Connected',
+      },
+    });
+  };
+
   return (
     <>
       {showConfirmation && (
         <Confirmation
           question={`Do you want to connect with ${connectedUser.nickname}?`}
-          onSubmit={(answer) => {
-            if (!answer) {
-              dispatch({
-                type: actionType.ROUTE_CHANGE,
-                payload: {
-                  route: 'Exit',
-                },
-              });
-            } else {
-              setShowConfirmation(false);
-            }
-          }}
+          onSubmit={handleSubmit}
         />
       )}
     </>
