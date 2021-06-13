@@ -2,6 +2,7 @@ import path from 'path';
 import crypto from 'crypto';
 import Ipfs from 'ipfs-core';
 import config from '../config/index.js';
+import logger from '../utils/logger';
 
 const getNode = async ({ mode = '', dynamic }) => {
   /**
@@ -15,6 +16,7 @@ const getNode = async ({ mode = '', dynamic }) => {
   const ipfsConfig = Object.assign({}, config.ipfs, {
     repo,
   });
+  logger('[getNode] final ipfs config', ipfsConfig)
   const node = await Ipfs.create(ipfsConfig);
   return node;
 };

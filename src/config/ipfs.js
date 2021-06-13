@@ -2,6 +2,7 @@ import path from 'path';
 import os from 'os';
 import repo from './repo.js';
 import Swarm from './Swarm';
+import relay from './relay';
 import isDev from '../utils/isDev.js';
 
 export default {
@@ -12,4 +13,5 @@ export default {
       Swarm,
     },
   },
+  relay,
 };
