@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import Confirmation from '../components/Confirmation.js';
 import sendSignalWithRetry from '../../lib/sendSignalWithRetry.js';
+import waitSignal from '../../lib/waitSignal';
 import context from '../state/context.js';
 import actionType from '../state/constants/actionType';
 const ApprovingRoute = () => {
@@ -15,7 +16,8 @@ const ApprovingRoute = () => {
     user: { connectedUser, selfUser },
   } = state;
   const [showConfirmation, setShowConfirmation] = useState(true);
-  const waitRequestType = mode === 'create' ? 'request#2' : 'request#3';
+  const sendRequestType = mode === 'create' ? 'request#2' : 'request#3';
+  const waitRequestType = mode === 'create' ? 'request#3' : undefined;
 
   useEffect(() => {
     return () =>
@@ -28,17 +30,37 @@ const ApprovingRoute = () => {
   useEffect(() => {
     if (showConfirmation) return;
     sendSignalWithRetry(ptpObject, {
-      type: waitRequestType,
+      type: sendRequestType,
       nickname: selfUser.nickname,
       pubKey: selfUser.pubKey,
     });
-    // setPending({ isPending: true, text: 'Start to join the room...' });
-    dispatch({
-      type: actionType.ROUTE_CHANGE,
-      payload: {
-        route: 'Connected',
-      },
-    });
+    if (mode === 'create') {
+      dispatch({
+        type: actionType.SET_PENDING_STATE,
+        payload: { isPending: true, text: 'Wait for connection...' },
+      });
+      waitSignal(ptpObject, {
+        type: waitRequestType,
+      }).then(() => {
+        dispatch({
+          type: actionType.SET_PENDING_STATE,
+          payload: { isPending: false },
+        });
+        dispatch({
+          type: actionType.ROUTE_CHANGE,
+          payload: {
+            route: 'Connected',
+          },
+        });
+      });
+    } else {
+      dispatch({
+        type: actionType.ROUTE_CHANGE,
+        payload: {
+          route: 'Connected',
+        },
+      });
+    }
     return () => {};
   }, [showConfirmation]);
   return (
