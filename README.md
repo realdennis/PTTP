@@ -1,4 +1,8 @@
 # PTTP
+
+<img src="https://user-images.githubusercontent.com/26633162/121899392-f7034400-cd56-11eb-9116-69a4feed9902.png"></img>
+
+
 Peer Talks To Peer, based on IPFS, CLI tool.
 It's a PoC of the p2p-secure chat, what we do is the following stuffs:
 1. Deffie-Hellman exchange the session key
