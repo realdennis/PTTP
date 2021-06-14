@@ -1,6 +1,6 @@
 {
   "name": "pttp",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "PTTP: Peer talks to Peer, p2p private chat, CLI tool.",
   "main": "index.js",
   "author": "realdennis",
