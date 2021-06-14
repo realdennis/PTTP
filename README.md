@@ -5,6 +5,9 @@ It's a PoC of the p2p-secure chat, what we do is the following stuffs:
 2. Using session key do the AES-192-CBC encrypt for the message text
 3. Enjoy the non-censored & secure chat room.
 
+![demo](https://user-images.githubusercontent.com/26633162/121899103-ad1a5e00-cd56-11eb-87a0-8a0df6b2cbe6.gif)
+
+
 ## Note
 Currently it's un-stable, and only test in MDNS mode, and the relay mode is under developing `--relayCircuit`, so you guys can try to use it when you have a public IP.
 
