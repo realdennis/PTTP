@@ -14,12 +14,13 @@ const Route = () => {
 };
 
 const App = (props) => {
-  const { peerDH, node, mode, topic, dynamic } = props;
+  const { peerDH, node, mode, topic, dynamic, relayCircuit } = props;
   /**
    * peer state: "Initial", "Approving", "Connected", "Exit"
    */
+  const InitialRoute = relayCircuit ? 'RelayCircuit' : 'Initial';
   const [state, dispatch] = useReducer(rootReducer, {
-    route: 'Initial',
+    route: InitialRoute,
     pending: {
       isPending: false,
       text: "Waiting for the other peer's response",
@@ -52,6 +53,7 @@ const App = (props) => {
           topic,
           ownPeerID: props.ownPeerID,
           dynamic /** command option for multi addr */,
+          relayCircuit,
         },
         // state irrelevent
         peerDH,

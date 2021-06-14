@@ -6,6 +6,11 @@ import handler from './handler.js';
 const main = async () => {
   yargs(hideBin(process.argv))
     .scriptName('ptp')
+    .option('relayCircuit', {
+      type: 'boolean',
+      description: 'wait for relay node attached',
+      default: false,
+    })
     .option('nickname', {
       type: 'string',
       description: 'your nickname',
