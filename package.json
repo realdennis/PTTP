@@ -1,13 +1,11 @@
 {
   "name": "pttp",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "description": "PTTP: Peer talks to Peer, p2p private chat, CLI tool.",
   "main": "index.js",
   "author": "realdennis",
   "license": "MIT",
-  "bin": {
-    "pttp": "dist/index.js"
-  },
+  "bin": "dist/index.js",
   "scripts": {
     "build": "babel src/ -d dist/",
     "build:watch": "nodemon --watch src/ --exec 'rm -rf dist/ && npm run build'",
