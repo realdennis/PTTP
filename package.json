@@ -15,7 +15,7 @@
     "start:create:dev": "NODE_ENV=dev node --inspect ./dist create",
     "start:join": "node ./dist join",
     "start:join:dev": "NODE_ENV=dev node --inspect ./dist join",
-    "clean": "rm -rf ~/.PTTP-ipfs-repos",
+    "clean": "rm -rf ~/.pttp-ipfs-repos",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
