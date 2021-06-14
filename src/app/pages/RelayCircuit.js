@@ -3,8 +3,8 @@ import context from '../state/context';
 import actionType from '../state/constants/actionType';
 
 const RelayCircuit = () => {
-  const { ptpObject, state, dispatch } = useContext(context);
-  const { node } = ptpObject;
+  const { pttpObject, state, dispatch } = useContext(context);
+  const { node } = pttpObject;
   const intervalID = useRef(null);
   const [circuitConnected, setCircuitConnected] = useState(false);
 

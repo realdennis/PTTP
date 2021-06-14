@@ -1,4 +1,4 @@
 const repo = {
-    folder: '.ptp-ipfs-repos'
+    folder: '.pttp-ipfs-repos'
 }
 export default repo;

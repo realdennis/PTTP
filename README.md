@@ -1,15 +1,29 @@
-# PTP
-Peer talks to peer, based on IPFS, CLI tool.
+# PTTP
+Peer Talks To Peer, based on IPFS, CLI tool.
+It's a PoC of the p2p-secure chat, what we do is the following stuffs:
+1. Deffie-Hellman exchange the session key
+2. Using session key do the AES-192-CBC encrypt for the message text
+3. Enjoy the non-censored & secure chat room.
+
+## Note
+Currently it's un-stable, and only test in MDNS mode, and the relay mode is under developing `--relayCircuit`, so you guys can try to use it when you have a public IP.
 
 ## Install
 
 ```sh
-$ npm install ptp -g
+$ npm install pttp -g
 ```
 
-## Development
+## Usage
+
+Create room
+```sh
+$ pttp create 
+# Run the above command in other machine:
+# $ pttp join hDQzUKiovU/K4Weixl0EeLupJpN2U5tb
 ```
-$ git clone 
-$ npm install 
-$ npm run dev # this should watch the change and build + start
+
+Join room
+```sh
+$ pttp join hDQzUKiovU/K4Weixl0EeLupJpN2U5tb
 ```

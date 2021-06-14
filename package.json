@@ -1,7 +1,7 @@
 {
-  "name": "@realdennis/ptp",
-  "version": "1.0.4",
-  "description": "PTP: Peer talks to Peer, p2p private chat, CLI tool.",
+  "name": "pttp",
+  "version": "0.0.1",
+  "description": "PTTP: Peer talks to Peer, p2p private chat, CLI tool.",
   "main": "index.js",
   "author": "realdennis",
   "license": "MIT",
@@ -13,7 +13,7 @@
     "start:create:dev": "NODE_ENV=dev node --inspect ./dist create",
     "start:join": "node ./dist join",
     "start:join:dev": "NODE_ENV=dev node --inspect ./dist join",
-    "clean": "rm -rf ~/.ptp-ipfs-repos",
+    "clean": "rm -rf ~/.PTTP-ipfs-repos",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {

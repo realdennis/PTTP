@@ -10,8 +10,8 @@ const ApprovingRoute = () => {
    * case create: confirmation and send signal<request#2>
    * case join  : confirmation and send signal<request#3>
    */
-  const { state, dispatch, ptpObject } = useContext(context);
-  const { mode } = ptpObject;
+  const { state, dispatch, pttpObject } = useContext(context);
+  const { mode } = pttpObject;
   const {
     user: { connectedUser, selfUser },
   } = state;
@@ -37,7 +37,7 @@ const ApprovingRoute = () => {
       });
       return;
     }
-    sendSignalWithRetry(ptpObject, {
+    sendSignalWithRetry(pttpObject, {
       type: sendRequestType,
       nickname: selfUser.nickname,
       pubKey: selfUser.pubKey,
@@ -47,7 +47,7 @@ const ApprovingRoute = () => {
         type: actionType.SET_PENDING_STATE,
         payload: { isPending: true, text: 'Wait for connection...' },
       });
-      await waitSignal(ptpObject, {
+      await waitSignal(pttpObject, {
         type: waitRequestType,
       });
       dispatch({

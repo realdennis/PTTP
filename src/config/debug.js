@@ -1,5 +1,5 @@
 const debug = {
-    topic: "debug-mode-ptp-topic"
+    topic: "debug-mode-pttp-topic"
 }
 
 

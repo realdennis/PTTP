@@ -6,6 +6,7 @@ import isDev from '../utils/isDev.js';
 
 export default {
   silent: !isDev,
+  repo: path.resolve(os.homedir(), repo.folder),
   config: {
     Addresses: {
       Swarm,

@@ -4,7 +4,7 @@ import BigText from 'ink-big-text';
 import { Text } from 'ink';
 const Welcome = () => (
   <Gradient name="atlas">
-    <BigText text="PTP" />
+    <BigText text="PTTP" />
     <Text>Peer talks to peer safety</Text>
   </Gradient>
 );

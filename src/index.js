@@ -5,7 +5,7 @@ import { hideBin } from 'yargs/helpers';
 import handler from './handler.js';
 const main = async () => {
   yargs(hideBin(process.argv))
-    .scriptName('ptp')
+    .scriptName('pttp')
     .option('relayCircuit', {
       type: 'boolean',
       description: 'wait for relay node attached',

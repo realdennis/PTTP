@@ -46,8 +46,8 @@ const App = (props) => {
   return (
     <Context.Provider
       value={{
-        // ptpObject is for ptp inner ipfs library usage like ipfs node instance, topic, peerID
-        ptpObject: {
+        // pttpObject is for pttp inner ipfs library usage like ipfs node instance, topic, peerID
+        pttpObject: {
           node,
           mode,
           topic,

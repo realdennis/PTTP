@@ -9,8 +9,8 @@ import context from '../state/context';
 import actionType from '../state/constants/actionType';
 
 const InitialRoute = () => {
-  const { ptpObject, peerDH, state, dispatch } = useContext(context);
-  const { topic, mode } = ptpObject;
+  const { pttpObject, peerDH, state, dispatch } = useContext(context);
+  const { topic, mode } = pttpObject;
   const {
     user: { selfUser },
   } = state;
@@ -41,13 +41,13 @@ const InitialRoute = () => {
         },
       });
       logger('[initial route][effect] Join');
-      cleanupFn = sendSignalWithRetry(ptpObject, {
+      cleanupFn = sendSignalWithRetry(pttpObject, {
         type: 'request#1',
         ...selfUser,
         iv,
       });
     }
-    waitSignal(ptpObject, {
+    waitSignal(pttpObject, {
       type: waitRequestType,
     })
       .then((payload) => {

@@ -7,12 +7,12 @@ import sendSignal from '../../lib/sendSignal';
 import getAES192 from '../../lib/aes192';
 
 const ConnectedRoute = () => {
-  const { state, ptpObject } = useContext(context);
+  const { state, pttpObject } = useContext(context);
   const {
     user: { selfUser, connectedUser },
     encrypt: { sessionKey, iv } = {},
   } = state;
-  const { node, topic } = ptpObject;
+  const { node, topic } = pttpObject;
   const [messages, setMessages] = useState([]);
   const cipherRef = useRef(getAES192(sessionKey, iv));
   useEffect(() => {
@@ -45,7 +45,7 @@ const ConnectedRoute = () => {
   }, []);
 
   const onSend = (value) =>
-    sendSignal(ptpObject, {
+    sendSignal(pttpObject, {
       type: 'CHAT_MESSAGE',
       ...selfUser,
       cipherText: cipherRef.current.encrypt(value),
